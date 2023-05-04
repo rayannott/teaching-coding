@@ -4,13 +4,11 @@ Complete all functions by filling the gaps between YOUR CODE HERE and END OF YOU
 Running the script will test the functions one by one starting from the first.
 
 Set the RAISE_ON_FAIL variable to True if you want the program to raise an exception when a test fails.
+Set the RUN_TESTS to False if you don't wont to run the tests on every run of the script.
 '''
 
 RAISE_ON_FAIL = False
-
-# --- YOUR CODE HERE ---
-
-# --- END OF YOUR CODE ---
+RUN_TESTS = True
 
 
 
@@ -120,9 +118,7 @@ def manip_3(d: dict[int, int]) -> None:
     Insert missing integers between min(keys) and max(keys) with values all equal to 0
     '''
     # --- YOUR CODE HERE ---
-    for k in range(min(d.keys())+1, max(d.keys())):
-        if k not in d:
-            d[k] = 0
+    d.update([(k, 0) for k in range(min(d.keys())+1, max(d.keys())) if k not in d])
     # --- END OF YOUR CODE ---
 
 
@@ -131,70 +127,81 @@ def manip_4(d: dict[int, int]) -> None:
     For every key-value pair insert (2*key, 2*value) if 2*key does not exist.
     '''
     # --- YOUR CODE HERE ---
-    to_add = [(2*k, 2*v) for k, v in d.items() if 2*k not in d]
-    d.update(to_add)
+    d.update([(2*k, 2*v) for k, v in d.items() if 2*k not in d])
     # --- END OF YOUR CODE ---
 
 
 
 '--- PART 4: OTHER ---'
 
-def oth_1(d):
+def oth_1(d1: dict[int, int], d2: dict[int, int]) -> bool:
     '''
-    
+    Return a union of two dicts. That is, a new dictionary with key-value pairs from both.
+    It is guaranteed that d1 and d2 have different sets of keys: d1.keys() & d2.keys() == set().
     '''
     # --- YOUR CODE HERE ---
-
+    return d1 | d2
     # --- END OF YOUR CODE ---
 
 
-def oth_2(d):
+def oth_2(text: str) -> str:
     '''
-    
+    Given a string of text consisting of lowercase english letters,
+    return a new string where every letter is replaced with
+    its number in the alphabet: a -> 1, b -> 2, ..., z -> 26.
+    Ex.: 'aaabbc' -> '111223', 'hello' -> '85121215'.
     '''
+    from string import ascii_lowercase
     # --- YOUR CODE HERE ---
-
+    map_ = {letter: i for i, letter in enumerate(ascii_lowercase, 1)}
+    return ''.join(map(str, map(map_.get, text)))
     # --- END OF YOUR CODE ---
 
 
-def oth_3(d):
+def oth_3(d: dict[str, list[int]], door_number: int) -> list[str]:
     '''
-    
+    Given a dictionary which maps a password to a list of doors that can be opened with it
+    and a door number,
+    return a list of passwords that can be used to open the door.
+    Return result in any order.
+    Ex.: for {'ab': [4, 6], 'c': [3, 4], 'd': [3, 1, 5], 'e': [3, 5, 4]}
+        and door_number = 4 the answer is ['ab', 'c', 'e']
     '''
     # --- YOUR CODE HERE ---
-
+    return [k for k, v in d.items() if door_number in v]
     # --- END OF YOUR CODE ---
-
 
 
 
 # ----------------- <TESTS> -----------------
 def test_init_1():
     d = init_1()
-    return d['one'] == 1 and d['two'] == 2 and d['three'] == 3 and len(d) == 3
+    return d['one'] == 1, d['two'] == 2, d['three'] == 3, len(d) == 3
 
 def test_init_2():
     d = init_2()
+    res = []
     for k, v in zip(['a', 'b', 'c', 'd', 'e', 'f', 'g'],
                     [13.2, 5.4, 7.7, 0.0, 2.3, 5.2, 0.6]):
-        if d[k] != v: return False
-    return True and len(d) == 7
+        res.append(d[k] == v)
+    res.append(len(d) == 7)
+    return res
 
 def test_init_3():
     d = init_3()
-    return set(d.keys()) == set(range(1, 13)) and all(map(lambda x: x[0]**2 == x[1], d.items()))
+    return set(d.keys()) == set(range(1, 13)), all(map(lambda x: x[0]**2 == x[1], d.items()))
 
 def test_iter_1():
-    return iter_1({1: 3, 2: 5}) == -5 and \
-            iter_1({3: 2, 4: 5, 6: 3, 9: 0}) == 12 and \
+    return iter_1({1: 3, 2: 5}) == -5, \
+            iter_1({3: 2, 4: 5, 6: 3, 9: 0}) == 12, \
             iter_1({1: 1}) == 0
 
 def test_iter_3():
     d1 = {1: 5, 4: -1, 6: 3, 0: 1}
     d2 = {4: 1, 3: 2, 2: 3, 1: 4}
     d3 = {0: 0, 2: -100, -2: 100}
-    return iter_3(d1) == [(0, 1), (1, 5), (4, -1), (6, 3)] and \
-            iter_3(d2) == [(1, 4), (2, 3), (3, 2), (4, 1)] and \
+    return iter_3(d1) == [(0, 1), (1, 5), (4, -1), (6, 3)], \
+            iter_3(d2) == [(1, 4), (2, 3), (3, 2), (4, 1)], \
             iter_3(d3) == [(-2, 100), (0, 0), (2, -100)]
 
 def test_iter_4():
@@ -203,10 +210,10 @@ def test_iter_4():
     d3 = {0: 0, 2: -100, -2: 100}
     d4 = {1: 4, 3: -5}
     d5 = {2: 1, -6: 3}
-    return iter_4(d1) == [-1, 3, 1] and \
-            iter_4(d2) == [1, 3] and \
-            iter_4(d3) == [0, -100, 100] and \
-            iter_4(d4) == [] and \
+    return iter_4(d1) == [-1, 3, 1], \
+            iter_4(d2) == [1, 3], \
+            iter_4(d3) == [0, -100, 100], \
+            iter_4(d4) == [], \
             iter_4(d5) == [1, 3]
 
 def test_manip_1():
@@ -217,10 +224,10 @@ def test_manip_1():
     d5 = {2: 1, -6: 3}
     manip_1(d1); manip_1(d2)
     manip_1(d3); manip_1(d4); manip_1(d5)
-    return d1 == {1: 6, 4: -1, 6: 3, 0: 1} and \
-            d2 == {4: 1, 3: 3, 2: 3, 1: 5} and \
-            d3 == {0: 0, 2: -100, -2: 100} and \
-            d4 == {1: 5, 3: -4} and \
+    return d1 == {1: 6, 4: -1, 6: 3, 0: 1}, \
+            d2 == {4: 1, 3: 3, 2: 3, 1: 5}, \
+            d3 == {0: 0, 2: -100, -2: 100}, \
+            d4 == {1: 5, 3: -4}, \
             d5 == {2: 1, -6: 3}
 
 def test_manip_2():
@@ -229,10 +236,10 @@ def test_manip_2():
     d3 = {0: 0, 2: -100, -2: 100}
     d4 = {1: 4, 3: -5}
     d5 = {2: 1, -6: 3}
-    return manip_2(d1) == {5: 1, -1: 4, 3: 6, 1: 0} and \
-            manip_2(d2) == {1: 4, 2: 3, 3: 2, 4: 1} and \
-            manip_2(d3) == {0: 0, -100: 2, 100: -2} and \
-            manip_2(d4) == {4: 1, -5: 3} and \
+    return manip_2(d1) == {5: 1, -1: 4, 3: 6, 1: 0}, \
+            manip_2(d2) == {1: 4, 2: 3, 3: 2, 4: 1}, \
+            manip_2(d3) == {0: 0, -100: 2, 100: -2}, \
+            manip_2(d4) == {4: 1, -5: 3}, \
             manip_2(d5) == {1: 2, 3: -6}
 
 def test_manip_3():
@@ -246,10 +253,10 @@ def test_manip_3():
     manip_3(d3)
     manip_3(d4)
     manip_3(d5)
-    return d1 == {1: 5, 4: -1, 6: 3, 0: 1, 2: 0, 3: 0, 5: 0} and \
-            d2 == {4: 1, 3: 2, 2: 3, 1: 4} and \
-            d3 == {0: 0, 2: -100, -2: 100, -1: 0, 1: 0} and \
-            d4 == {1: 4, 3: -5, 2: 0} and \
+    return d1 == {1: 5, 4: -1, 6: 3, 0: 1, 2: 0, 3: 0, 5: 0}, \
+            d2 == {4: 1, 3: 2, 2: 3, 1: 4}, \
+            d3 == {0: 0, 2: -100, -2: 100, -1: 0, 1: 0}, \
+            d4 == {1: 4, 3: -5, 2: 0}, \
             d5 == {2: 1, -6: 3, -5: 0, -4: 0, -3: 0, -2: 0, -1: 0, 0: 0, 1: 0}
 
 def test_manip_4():
@@ -259,30 +266,59 @@ def test_manip_4():
     manip_4(d4)
     manip_4(d3)
     manip_4(d2)
-    return d4 == {1: 4, 3: -5, 2: 8, 6: -10} and \
-            d3 == {0: 2, 1: 5, 2: 7, 4: 14} and \
+    return d4 == {1: 4, 3: -5, 2: 8, 6: -10}, \
+            d3 == {0: 2, 1: 5, 2: 7, 4: 14}, \
             d2 == {1: 2, 3: 4, 5: 6, 2: 4, 6: 8, 10: 12}
+
+def test_oth_1():
+    d11 = {1: 4, 3: 7}; d12 = {2: 8, 9: 10}
+    d21 = {0: 4}; d22 = {4: 0}
+    d31 = {1: 4}; d32 = {}
+    return oth_1(d11, d12) == {1: 4, 3: 7, 2: 8, 9: 10}, \
+            oth_1(d21, d22) == {0: 4, 4: 0}, \
+            oth_1(d31, d32) == {1: 4}
+
+def test_oth_2():
+    return oth_2('ok') == '1511', \
+            oth_2('zbaqd') == '2621174', \
+            oth_2('wyghaw') == '232578123', \
+            oth_2('qdhjakd') == '1748101114', \
+            oth_2('pozlqf') == '16152612176', \
+            oth_2('ghuiszbxcnbnz') == '78219192622431421426', \
+            oth_2('a') == '1', \
+            oth_2('z') == '26'
+    
+def test_oth_3():
+    def _eq_sets(l1, l2):
+        return set(l1) == set(l2)
+    d1 = {'ab': [4, 6], 'c': [3, 4], 'd': [3, 1, 5], 'e': [3, 5, 4]}
+    d2 = {'a': [1, 5], 'b': [3, 6], 'c': [4, 1]}
+    return _eq_sets(oth_3(d1, 4), ['ab', 'c', 'e']), \
+            _eq_sets(oth_3(d2, 7), []), \
+            _eq_sets(oth_3(d1, 5), ['d', 'e']), \
+            _eq_sets(oth_3(d2, 3), ['b'])
 
 
 TESTS = [
     test_init_1, test_init_2, test_init_3,
     test_iter_1, test_iter_3, test_iter_4,
-    test_manip_1, test_manip_2, test_manip_3, test_manip_4
-
+    test_manip_1, test_manip_2, test_manip_3, test_manip_4,
+    test_oth_1, test_oth_2, test_oth_3
 ]
 
 def test():
     passed = 0
     for i, test_func in enumerate(TESTS):
-        print(f'{i}. testing [{test_func.__name__}]...')
-        if not test_func():
-            msg = f'[{test_func.__name__}] FAILED ' + '-'*15
+        print(f'{i}. testing [{test_func.__name__[5:]}]...', end=' ')
+        test_result = test_func()
+        if not all(test_result):
+            msg = f'[{test_func.__name__[5:]}] FAILED: passed only {sum(test_result)}/{len(test_result)}' + '-'*15
             if RAISE_ON_FAIL:
                 raise AssertionError(msg)
             else:
                 print(msg)
         else:
-            print(f'[{test_func.__name__}] passed')
+            print(f'[{test_func.__name__[5:]}] passed {sum(test_result)}/{len(test_result)}')
             passed += 1
     if passed == len(TESTS):
         print('--- ALL PASSED ---')
@@ -295,4 +331,5 @@ def test():
 
 
 if __name__ == '__main__':
-    test()
+    if RUN_TESTS:
+        test()
