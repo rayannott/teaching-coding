@@ -20,7 +20,7 @@ def init_1() -> dict[str, int]:
     Then return this dict object.
     '''
     # --- YOUR CODE HERE ---
-    return {'one': 1, 'two': 2, 'three': 3}
+    
     # --- END OF YOUR CODE ---
     
 
@@ -32,7 +32,7 @@ def init_2() -> dict[str, float]:
     KEYS = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
     VALUES = [13.2, 5.4, 7.7, 0.0, 2.3, 5.2, 0.6]
     # --- YOUR CODE HERE ---
-    return dict(zip(KEYS, VALUES))
+    
     # --- END OF YOUR CODE ---
 
 
@@ -44,7 +44,7 @@ def init_3() -> dict[int, int]:
     '''
     KEYS = range(1, 13)
     # --- YOUR CODE HERE ---
-    return {k: k**2 for k in KEYS}
+    
     # --- END OF YOUR CODE ---
 
 
@@ -56,7 +56,7 @@ def iter_1(d: dict[int, int]) -> int:
     Return the difference between the sum of all keys and the sum of all values: sum(keys) - sum(values)
     '''
     # --- YOUR CODE HERE ---
-    return sum(d.keys()) - sum(d.values())
+    
     # --- END OF YOUR CODE ---
 
 
@@ -74,9 +74,7 @@ def iter_3(d: dict[int, int]) -> list[tuple[int, int]]:
     Return a list or pairs (key, value) of a given dict sorted by <key> (ascending).
     '''
     # --- YOUR CODE HERE ---
-    l = list(d.items())
-    l.sort(key=lambda x: x[0])
-    return l
+    
     # --- END OF YOUR CODE ---
 
 
@@ -85,7 +83,7 @@ def iter_4(d: dict[int, str]) -> list[str]:
     Return a list of values corresponding to even keys.
     '''
     # --- YOUR CODE HERE ---
-    return [v for k, v in d.items() if k % 2 == 0]
+    
     # --- END OF YOUR CODE ---
 
 
@@ -97,9 +95,7 @@ def manip_1(d: dict[int, int]) -> None:
     Increase every value with an odd key by 1.
     '''
     # --- YOUR CODE HERE ---
-    for k in d:
-        if k % 2 == 1:
-            d[k] += 1
+    
     # --- END OF YOUR CODE ---
 
 
@@ -109,7 +105,7 @@ def manip_2(d: dict) -> dict:
     It is guaranteed that all values are unique. 
     '''
     # --- YOUR CODE HERE ---
-    return dict(zip(d.values(), d.keys()))
+    
     # --- END OF YOUR CODE ---
 
 
@@ -118,7 +114,7 @@ def manip_3(d: dict[int, int]) -> None:
     Insert missing integers between min(keys) and max(keys) with values all equal to 0
     '''
     # --- YOUR CODE HERE ---
-    d.update([(k, 0) for k in range(min(d.keys())+1, max(d.keys())) if k not in d])
+    
     # --- END OF YOUR CODE ---
 
 
@@ -127,7 +123,7 @@ def manip_4(d: dict[int, int]) -> None:
     For every key-value pair insert (2*key, 2*value) if 2*key does not exist.
     '''
     # --- YOUR CODE HERE ---
-    d.update([(2*k, 2*v) for k, v in d.items() if 2*k not in d])
+    
     # --- END OF YOUR CODE ---
 
 
@@ -140,7 +136,7 @@ def oth_1(d1: dict[int, int], d2: dict[int, int]) -> bool:
     It is guaranteed that d1 and d2 have different sets of keys: d1.keys() & d2.keys() == set().
     '''
     # --- YOUR CODE HERE ---
-    return d1 | d2
+    
     # --- END OF YOUR CODE ---
 
 
@@ -153,8 +149,7 @@ def oth_2(text: str) -> str:
     '''
     from string import ascii_lowercase
     # --- YOUR CODE HERE ---
-    map_ = {letter: i for i, letter in enumerate(ascii_lowercase, 1)}
-    return ''.join(map(str, map(map_.get, text)))
+    
     # --- END OF YOUR CODE ---
 
 
@@ -168,7 +163,7 @@ def oth_3(d: dict[str, list[int]], door_number: int) -> list[str]:
         and door_number = 4 the answer is ['ab', 'c', 'e']
     '''
     # --- YOUR CODE HERE ---
-    return [k for k, v in d.items() if door_number in v]
+    
     # --- END OF YOUR CODE ---
 
 
