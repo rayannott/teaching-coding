@@ -305,16 +305,20 @@ def test():
     passed = 0
     for i, test_func in enumerate(TESTS):
         print(f'{i}. testing [{test_func.__name__[5:]}]...', end=' ')
-        test_result = test_func()
-        if not all(test_result):
-            msg = f'[{test_func.__name__[5:]}] FAILED: passed only {sum(test_result)}/{len(test_result)}' + '-'*15
-            if RAISE_ON_FAIL:
-                raise AssertionError(msg)
-            else:
-                print(msg)
+        try:
+            test_result = test_func()
+        except Exception as e:
+            print(f'[{test_func.__name__[5:]}] FAILED with an exception: {e}')
         else:
-            print(f'[{test_func.__name__[5:]}] passed {sum(test_result)}/{len(test_result)}')
-            passed += 1
+            if not all(test_result):
+                msg = f'[{test_func.__name__[5:]}] FAILED: passed only {sum(test_result)}/{len(test_result)}' + '-'*15
+                if RAISE_ON_FAIL:
+                    raise AssertionError(msg)
+                else:
+                    print(msg)
+            else:
+                print(f'[{test_func.__name__[5:]}] passed {sum(test_result)}/{len(test_result)}')
+                passed += 1
     if passed == len(TESTS):
         print('--- ALL PASSED ---')
     else:
@@ -326,5 +330,9 @@ def test():
 
 
 if __name__ == '__main__':
+    # --- A PLACE TO WRITE YOUR OWN TESTS ---
+
+
+    # ---------------------------------------
     if RUN_TESTS:
         test()
