@@ -4,7 +4,7 @@ Complete all functions by filling the gaps between YOUR CODE HERE and END OF YOU
 Running the script will test the functions one by one starting from the first.
 
 Set the RAISE_ON_FAIL variable to True if you want the program to raise an exception when a test fails.
-Set the RUN_TESTS to False if you don't wont to run the tests on every run of the script.
+Set the RUN_TESTS to False if you don't want to run the tests on every run of the script.
 '''
 
 RAISE_ON_FAIL = False
