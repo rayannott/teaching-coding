@@ -130,7 +130,7 @@ def manip_4(d: dict[int, int]) -> None:
 
 '--- PART 4: OTHER ---'
 
-def oth_1(d1: dict[int, int], d2: dict[int, int]) -> bool:
+def oth_1(d1: dict[int, int], d2: dict[int, int]) -> dict:
     '''
     Return a union of two dicts. That is, a new dictionary with key-value pairs from both.
     It is guaranteed that d1 and d2 have different sets of keys: d1.keys() & d2.keys() == set().
