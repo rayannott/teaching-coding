@@ -50,7 +50,7 @@ def coordinates_of_first_recording(sensor_data_list: SensorDataList) -> tuple[fl
     Note: suppose the list is already sorted.
     '''
     # --- YOUR CODE HERE ---
-    
+    ...
     # --- END OF YOUR CODE ---
     
 def get_filtered_temperatures(sensor_data_list: SensorDataList) -> SensorDataList:
@@ -59,7 +59,7 @@ def get_filtered_temperatures(sensor_data_list: SensorDataList) -> SensorDataLis
     Keep the original order.
     '''
     # --- YOUR CODE HERE ---
-    
+    ...
     # --- END OF YOUR CODE ---
 
 def distance(loc1: tuple[float, float], loc2: tuple[float, float]) -> float:
@@ -67,7 +67,7 @@ def distance(loc1: tuple[float, float], loc2: tuple[float, float]) -> float:
     Return a Euclidian distance between two points on the plane.
     '''
     # --- YOUR CODE HERE ---
-    
+    ...
     # --- END OF YOUR CODE ---
 
 def find_closest_sd(location: tuple[float, float], sensor_data_list: SensorDataList) -> SensorData:
@@ -75,7 +75,7 @@ def find_closest_sd(location: tuple[float, float], sensor_data_list: SensorDataL
     Return a SensorData object recorded closest to a given coordinate point.
     '''
     # --- YOUR CODE HERE ---
-    
+    ...
     # --- END OF YOUR CODE ---
 
 def save_sensor_data(sensor_data_list: SensorDataList):
@@ -84,7 +84,7 @@ def save_sensor_data(sensor_data_list: SensorDataList):
     '''
     SAVE_TO = 'sorted_sd.wtf'
     # --- YOUR CODE HERE ---
-    
+    ...
     # --- END OF YOUR CODE ---
 
 
