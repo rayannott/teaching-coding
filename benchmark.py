@@ -1,3 +1,7 @@
+"""
+Run this script to test the correctness and benchmark the performance of the
+autocompleters implemented in `brains.py`.
+"""
 import timeit
 from string import ascii_lowercase
 import random

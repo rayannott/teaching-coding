@@ -2,10 +2,11 @@ from brains import LinearListSearcher, LinearSetSearcher, BinarySearcher, Trie
 
 
 def main():
-    # brain = LinearListSearcher()
+    # pick one of the following engines
+    brain = LinearListSearcher()
     # brain = LinearSetSearcher()
     # brain = BinarySearcher()
-    brain = Trie()
+    # brain = Trie()
     while True:
         inp = input('autocomplete> ')
         if not inp:
