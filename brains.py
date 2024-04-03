@@ -80,28 +80,72 @@ class BinarySearcher(Autocompleter):
                 right = mid - 1
         return False, left
 
+from collections import defaultdict
+
 
 class Trie(Autocompleter):
     class _Node:
         def __init__(self):
-            self.children: dict[str, Trie._Node] = {}
+            self.letter = ''
+            self.children: defaultdict[str, Trie._Node] = defaultdict(Trie._Node)
             self.is_word = False
+        
+        def insert(self, word: str) -> 'Trie._Node':
+            if not word:
+                self.is_word = True
+                return self
+            self.children[word[0]].insert(word[1:]).withletter(word[0])
+            return self
+        
+        def withletter(self, letter: str):
+            self.letter = letter
+
+        def collapse(self) -> list[str]:
+            return ([self.letter] if self.is_word else []) + (
+                [self.letter + part for kid in self.children.values() for part in kid.collapse()]
+                if self.children else []
+            )
+        
+        def find(self, prefix: str) -> 'Trie._Node':
+            if len(prefix) == 1:
+                return self.children[prefix[0]]
+            return self.children[prefix[0]].find(prefix[1:])
+
+        def autocomplete(self, prefix: str) -> list[str]:
+            res = []
+            node = self.find(prefix)
+            if node.is_word: res.append('')
+            for kid in node.children.values():
+                res.extend(kid.collapse())
+            return res
+
+        def __contains__(self, word: str) -> bool:
+            if len(word) == 1:
+                return self.children[word].is_word
+            return word[1:] in self.children[word[0]]
+        
+        def __repr__(self) -> str:
+            children_str = '' if not self.children else f'[{" ".join(str(kid) for kid in self.children.values())}]'
+            return f"{self.letter}({'+' if self.is_word else '-'}){children_str}"
     
     def __init__(self):
-        ...
+        self.root = Trie._Node()
+        for w in WORDS:
+            self.root.insert(w)
     
     def __contains__(self, word: str) -> bool:
-        ...
+        return word in self.root
 
     def complete(self, prefix: str) -> list:
-        ...
+        return [prefix + rest for rest in self.root.autocomplete(prefix)]
 
 
 if __name__ == '__main__':
-    brain = BinarySearcher()
-    while True:
-        inp = input('>>> ')
-        if not inp:
-            break
-        print(brain._binary_search_index(inp))
-        
+    # brain = Trie()
+    node = Trie._Node()
+    for word in ['a', 'bc', 'abc', 'ac', 'bcd', 'bcc', 'bcef']:
+        node.insert(word)
+    print(node.collapse())
+    print(node.find('bc'))
+    print(node.find('ad'))
+    print(node.find('ab'))

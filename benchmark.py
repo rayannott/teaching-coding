@@ -49,7 +49,7 @@ def test_correctness(autocompleter_cls: Type[Autocompleter]) -> None:
 
 
 def time_init(autocompleter_cls: Type[Autocompleter]) -> tuple[float, float]:
-    N = 1000
+    N = 10
     times = timeit.repeat(
         stmt=f'autocompleter_cls()',
         globals={'WORDS': WORDS, 'autocompleter_cls': autocompleter_cls},
@@ -83,25 +83,61 @@ def time_complete(autocompleter_cls: Type[Autocompleter]) -> tuple[float, float]
     return mean(times) / N, stdev(times) / N
 
 
-if __name__ == '__main__':
+def main():
     for cls in (
         LinearListSearcher,
         LinearSetSearcher,
         BinarySearcher,
-        # Trie
+        Trie
     ):
         # correctness test
         test_correctness(cls)
 
         print(f'benchmarking {cls.__name__}...')
-        # benchmark __init__
+        # benchmark `__init__`
         mean_time, stdev_time = time_init(cls)
         print(f'- [init] {cls.__name__}: {mean_time:e} ± {stdev_time:e} seconds')
 
-        # benchmark __contains__
+        # benchmark `__contains__`
         mean_time, stdev_time = time_contains(cls)
         print(f'- [contains] {cls.__name__}: {mean_time:e} ± {stdev_time:e} seconds')
 
-        # benchmark complete
+        # benchmark `complete`
         mean_time, stdev_time = time_complete(cls)
         print(f'- [complete] {cls.__name__}: {mean_time:e} ± {stdev_time:e} seconds')
+
+
+if __name__ == '__main__':
+    main()
+
+
+OUTPUT = '''
+testing LinearListSearcher...
+- [contains] LinearListSearcher  : OK
+- [complete] LinearListSearcher  : OK
+benchmarking LinearListSearcher...
+- [init] LinearListSearcher: 1.339999e-07 ± 9.555091e-08 seconds
+- [contains] LinearListSearcher: 1.915408e-02 ± 2.203233e-04 seconds
+- [complete] LinearListSearcher: 3.406734e-02 ± 1.372229e-04 seconds
+testing LinearSetSearcher...
+- [contains] LinearSetSearcher   : OK
+- [complete] LinearSetSearcher   : OK
+benchmarking LinearSetSearcher...
+- [init] LinearSetSearcher: 3.934000e-04 ± 1.465137e-05 seconds
+- [contains] LinearSetSearcher: 4.157807e-05 ± 1.625767e-07 seconds
+- [complete] LinearSetSearcher: 4.481222e-02 ± 9.180537e-04 seconds
+testing BinarySearcher...
+- [contains] BinarySearcher      : OK
+- [complete] BinarySearcher      : OK
+benchmarking BinarySearcher...
+- [init] BinarySearcher: 1.956644e-03 ± 6.295258e-06 seconds
+- [contains] BinarySearcher: 1.986713e-03 ± 5.916621e-06 seconds
+- [complete] BinarySearcher: 2.555371e-03 ± 1.309348e-05 seconds
+testing Trie...
+- [contains] Trie                : OK
+- [complete] Trie                : OK
+benchmarking Trie...
+- [init] Trie: 2.506339e-02 ± 2.316471e-04 seconds
+- [contains] Trie: 1.427345e-03 ± 1.879062e-05 seconds
+- [complete] Trie: 4.296555e-03 ± 1.224633e-03 seconds
+'''
