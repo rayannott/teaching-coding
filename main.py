@@ -10,8 +10,9 @@ def main():
             break
         if inp.endswith('?'):
             print(inp[:-1] in brain)
-        for word in brain.complete(inp):
-            print('    -', word)
+        # for word in brain.complete(inp):
+        #     print('    -', word)
+        print(brain.complete(inp))
 
 
 if __name__ == '__main__':

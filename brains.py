@@ -38,6 +38,7 @@ class LinearSetSearcher(Autocompleter):
     def __contains__(self, word: str) -> bool:
         return word in self.words
 
+
 class BinarySearcher(Autocompleter):
     def __init__(self):
         self.words = sorted(WORDS)
