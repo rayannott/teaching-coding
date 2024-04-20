@@ -1,5 +1,6 @@
 import pathlib
 from typing import Any, Iterable
+from collections import deque
 
 
 Node = int
@@ -20,6 +21,8 @@ class Network:
             raise ValueError(f'Cannot connect a node to itself')
         if not (edge[0] in self.adj.keys() and edge[1] in self.adj.keys()):
             raise KeyError(f'Cannot connect non-existing nodes')
+        if edge[1] in self.adj[edge[0]]:
+            raise ValueError(f'Edge {edge} already exists')
         self.adj[edge[0]].append(edge[1])
     
     def add_node(self, node: Node, node_data: Any = None):
@@ -33,10 +36,14 @@ class Network:
         return self.node_data[node]
 
     def remove_node(self, node: Node):
-        ...
+        del self.adj[node]
+        del self.node_data[node]
+        for from_, to_list in self.adj.items():
+            if node in to_list:
+                to_list.remove(node)
     
     def remove_edge(self, edge: Edge):
-        ...
+        self.adj[edge[0]].remove(edge[1])
 
     def edges(self) -> Iterable[Edge]:
         for from_, to_list in self.adj.items():
@@ -46,6 +53,36 @@ class Network:
     def nodes(self) -> Iterable[Node]:
         yield from self.adj
 
+    # algorithms
+
+    def bfs(self, start: Node) -> Iterable[Node]:
+        queue = deque([start])
+        visited = {start}
+        while queue:
+            node = queue.popleft()
+            yield node
+            for neighbor in self.adj[node]:
+                if neighbor not in visited:
+                    queue.append(neighbor)
+                    visited.add(neighbor)
+    
+    def dfs(self, start: Node) -> Iterable[Node]:
+        ...
+    
+    def shortest_path(self, start: Node, end: Node) -> list[Node]:
+        ...
+
+    def connected_components(self) -> list[list[Node]]:
+        cc = []
+        visited = set()
+        for node in self.nodes():
+            if node not in visited:
+                component = list(self.bfs(node))
+                cc.append(component)
+                visited.update(component)
+        return cc
+
+    # serialization
 
     def dump(self, filepath: pathlib.Path):
         ...
