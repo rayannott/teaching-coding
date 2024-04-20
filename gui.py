@@ -10,7 +10,7 @@ FONT = pygame.font.Font(None, 36)
 
 FRAMERATE = 60
 
-SCREEN_SIZE_HEIGHT = 600
+SCREEN_SIZE = (1000, 600)
 
 WHITE = Color("white")
 BG_COLOR = Color("#202020")
@@ -19,6 +19,17 @@ BG_COLOR = Color("#202020")
 NEXT_NODE = count(0)
 
 ARROW_HEAD_SIZE = 12
+
+
+import random
+def generate_n_random_colors(n: int) -> list[Color]:
+    return [
+        Color(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)) 
+        for _ in range(n)
+    ]
+
+
+COLORS = generate_n_random_colors(15)
 
 
 class NetworkApp:
@@ -30,17 +41,23 @@ class NetworkApp:
         self.running = True
 
         self.node_mouse_down = None
+
+    def process_nodes_event(self, n1: Node, n2: Node):
+        if n1 == n2:
+            self.remove_node(n1)
+        elif (n1, n2) in self.network.edges():
+            self.network.remove_edge((n1, n2))
+        else:
+            self.network.add_edge((n1, n2))
     
+    def remove_node(self, node: Node):
+        self.network.remove_node(node)
+        del self.nodes_positions[node]
+
     def add_node(self, position: Vector2):
         node = next(NEXT_NODE)
         self.network.add_node(node)
         self.nodes_positions[node] = position
-    
-    def add_edge(self, edge: Edge):
-        try:
-            self.network.add_edge(edge)
-        except ValueError as e:
-            print(e)
     
     def mouse_on_node(self, position: Vector2) -> Node | None:
         for node, node_position in self.nodes_positions.items():
@@ -48,51 +65,79 @@ class NetworkApp:
                 return node
         return None
     
-    def process_event(self, event: pygame.Event):
+    def process_event(self, event: pygame.event.Event):
         if event.type == pygame.QUIT:
             self.running = False
             return
+        
+        is_shift_mode = pygame.key.get_mods() & pygame.KMOD_SHIFT
+        
+        # mouse events
         mouse_pos = Vector2(pygame.mouse.get_pos())
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                self.node_mouse_down = self.mouse_on_node(mouse_pos)
+            self.node_mouse_down = self.mouse_on_node(mouse_pos)
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
                 node_mouse_up = self.mouse_on_node(mouse_pos)
-                if self.node_mouse_down is not None and node_mouse_up is not None:
-                    self.add_edge((self.node_mouse_down, node_mouse_up))
+                if self.node_mouse_down is not None and node_mouse_up is not None and not is_shift_mode:
+                    self.process_nodes_event(self.node_mouse_down, node_mouse_up)
+                elif self.node_mouse_down is None and node_mouse_up is None:
+                    self.add_node(Vector2(mouse_pos))
                 self.node_mouse_down = None
-            elif event.button == 2:
-                self.add_node(Vector2(mouse_pos))
+        elif event.type == pygame.MOUSEMOTION:
+            if is_shift_mode and self.node_mouse_down is not None:
+                self.nodes_positions[self.node_mouse_down] = mouse_pos
+        
+        # keyboard events
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_i:
                 print(self.network)
+            elif event.key == pygame.K_b:
+                print(list(self.network.bfs(0)))
+            elif event.key == pygame.K_d:
+                print(list(self.network.dfs(0)))
+            elif event.key == pygame.K_c:
+                print(self.network.connected_components())
 
-    def _draw_node(self, node: Node, position: Vector2):
-        pygame.draw.circle(self.surface, WHITE, position, self.NODES_RADIUS, 3)
+    def _draw_node(self, 
+            node: Node,
+            position: Vector2,
+            color: Color = WHITE,
+            thickness: int = 3
+        ):
+        pygame.draw.circle(self.surface, color, position, self.NODES_RADIUS, thickness)
         text = FONT.render(str(node), True, WHITE)
         text_rect = text.get_rect(center=position + Vector2(self.NODES_RADIUS * 1.5, 0))
         self.surface.blit(text, text_rect)
     
-    def _draw_edge(self, from_: Vector2, to_: Vector2):
+    def _draw_edge(self, 
+            from_: Vector2,
+            to_: Vector2,
+            color: Color = WHITE,
+            thickness: int = 2
+        ):
         direction = (to_ - from_).normalize()
         arrow_base = to_ - 2 * direction * self.NODES_RADIUS
         edge_start = from_ + direction * self.NODES_RADIUS
         edge_end = to_ - direction * self.NODES_RADIUS
         arrow_left = arrow_base + direction.rotate(30) * ARROW_HEAD_SIZE
         arrow_right = arrow_base + direction.rotate(-30) * ARROW_HEAD_SIZE
-        pygame.draw.line(self.surface, WHITE, arrow_left, edge_end, 2)
-        pygame.draw.line(self.surface, WHITE, arrow_right, edge_end, 2)
+        pygame.draw.line(self.surface, color, arrow_left, edge_end, thickness)
+        pygame.draw.line(self.surface, color, arrow_right, edge_end, thickness)
         pygame.draw.line(self.surface,
-            WHITE,
+            color,
             edge_start,
             edge_end,
-            2
+            thickness
         )
     
     def draw_network(self):
-        for node, position in self.nodes_positions.items():
-            self._draw_node(node, position)
+        # for node, position in self.nodes_positions.items():
+        #     self._draw_node(node, position)
+        for i, cc in enumerate(self.network.connected_components()):
+            color = COLORS[i]
+            for node in cc:
+                self._draw_node(node, self.nodes_positions[node], color)
 
         for edge in self.network.edges():
             p1 = self.nodes_positions[edge[0]]
@@ -101,8 +146,8 @@ class NetworkApp:
 
     def run(self):
         pygame.init()
-        self.surface = pygame.display.set_mode((SCREEN_SIZE_HEIGHT, SCREEN_SIZE_HEIGHT))
-        background = pygame.Surface((SCREEN_SIZE_HEIGHT, SCREEN_SIZE_HEIGHT))
+        self.surface = pygame.display.set_mode(SCREEN_SIZE)
+        background = pygame.Surface(SCREEN_SIZE)
         background.fill(BG_COLOR)
         pygame.display.set_caption("Network App")
         clock = pygame.time.Clock()
