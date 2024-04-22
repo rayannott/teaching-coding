@@ -1,6 +1,6 @@
 from itertools import count
 import pathlib
-import json
+import datetime
 
 import pygame
 from pygame import Color, Vector2
@@ -20,6 +20,9 @@ BG_COLOR = Color("#202020")
 ARROW_HEAD_SIZE = 12
 
 
+SAVES_DIR = pathlib.Path("saves")
+
+
 import random
 def generate_n_random_colors(n: int) -> list[Color]:
     return [
@@ -31,18 +34,26 @@ def generate_n_random_colors(n: int) -> list[Color]:
 COLORS = generate_n_random_colors(15)
 
 
+ALL_NETWORK_PATHS = list(SAVES_DIR.glob('*.json'))
+ptr = count(-1)
+
+
 class NetworkApp:
     NODES_RADIUS = 20
 
-    def __init__(self, network: Network | None = None):
-        self.network = network if network is not None else Network()
-        self.nodes_positions: dict[Node, Vector2] = {}
+    def _reload(self, network_path: pathlib.Path | None = None):
+        self.network_path = network_path
+        self.network = Network.load(network_path) if network_path is not None else Network()
         self.running = True
 
-        self.NEXT_NODE = count(len(self.network.adj))
-
         self.node_mouse_down = None
-
+    
+    def __init__(self, network_path: pathlib.Path | None = None):
+        self._reload(network_path)
+    
+    def get_next_network_path(self) -> pathlib.Path | None:
+        return ALL_NETWORK_PATHS[next(ptr) % len(ALL_NETWORK_PATHS)]
+    
     def process_nodes_event(self, n1: Node, n2: Node):
         if n1 == n2:
             self.remove_node(n1)
@@ -53,15 +64,14 @@ class NetworkApp:
     
     def remove_node(self, node: Node):
         self.network.remove_node(node)
-        del self.nodes_positions[node]
 
     def add_node(self, position: Vector2):
-        node = next(self.NEXT_NODE)
+        node = next(self.network.next_node_gen)
         self.network.add_node(node)
-        self.nodes_positions[node] = position
+        self.network.nodes_positions[node] = position
     
     def mouse_on_node(self, position: Vector2) -> Node | None:
-        for node, node_position in self.nodes_positions.items():
+        for node, node_position in self.network.nodes_positions.items():
             if (node_position - position).length_squared() <= self.NODES_RADIUS**2:
                 return node
         return None
@@ -76,6 +86,11 @@ class NetworkApp:
         # mouse events
         mouse_pos = Vector2(pygame.mouse.get_pos())
         if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button in {4, 5}:
+                if event.button == 4:
+                    self.NODES_RADIUS += 1
+                else:
+                    self.NODES_RADIUS = max(1, self.NODES_RADIUS - 1)
             self.node_mouse_down = self.mouse_on_node(mouse_pos)
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
@@ -87,7 +102,7 @@ class NetworkApp:
                 self.node_mouse_down = None
         elif event.type == pygame.MOUSEMOTION:
             if is_shift_mode and self.node_mouse_down is not None:
-                self.nodes_positions[self.node_mouse_down] = mouse_pos
+                self.network.nodes_positions[self.node_mouse_down] = mouse_pos
         
         # keyboard events
         if event.type == pygame.KEYDOWN:
@@ -99,6 +114,18 @@ class NetworkApp:
                 print(list(self.network.dfs(0)))
             elif event.key == pygame.K_c:
                 print(self.network.connected_components())
+            elif event.key == pygame.K_s:
+                self.network.dump(
+                    SAVES_DIR / f"network{datetime.datetime.now().timestamp():.0f}.json"
+                    if self.network_path is None
+                    else self.network_path
+                )
+                global ALL_NETWORK_PATHS
+                ALL_NETWORK_PATHS = list(SAVES_DIR.glob('*.json'))
+            elif event.key == pygame.K_n:
+                self._reload(self.get_next_network_path())
+            elif event.key == pygame.K_SPACE:
+                self._reload()
 
     def _draw_node(self, 
             node: Node,
@@ -138,11 +165,11 @@ class NetworkApp:
         for i, cc in enumerate(self.network.connected_components()):
             color = COLORS[i]
             for node in cc:
-                self._draw_node(node, self.nodes_positions[node], color)
+                self._draw_node(node, self.network.nodes_positions[node], color)
 
         for edge in self.network.edges():
-            p1 = self.nodes_positions[edge[0]]
-            p2 = self.nodes_positions[edge[1]]
+            p1 = self.network.nodes_positions[edge[0]]
+            p2 = self.network.nodes_positions[edge[1]]
             self._draw_edge(p1, p2)
 
     def run(self):
