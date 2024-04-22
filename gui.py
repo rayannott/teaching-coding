@@ -77,7 +77,7 @@ class NetworkGui:
         return None
     
     def process_event(self, event: pygame.event.Event):
-        if event.type == pygame.QUIT:
+        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
             self.running = False
             return
         
