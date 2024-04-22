@@ -1,4 +1,6 @@
 from itertools import count
+import pathlib
+import json
 
 import pygame
 from pygame import Color, Vector2
@@ -14,9 +16,6 @@ SCREEN_SIZE = (1000, 600)
 
 WHITE = Color("white")
 BG_COLOR = Color("#202020")
-
-
-NEXT_NODE = count(0)
 
 ARROW_HEAD_SIZE = 12
 
@@ -40,6 +39,8 @@ class NetworkApp:
         self.nodes_positions: dict[Node, Vector2] = {}
         self.running = True
 
+        self.NEXT_NODE = count(len(self.network.adj))
+
         self.node_mouse_down = None
 
     def process_nodes_event(self, n1: Node, n2: Node):
@@ -55,7 +56,7 @@ class NetworkApp:
         del self.nodes_positions[node]
 
     def add_node(self, position: Vector2):
-        node = next(NEXT_NODE)
+        node = next(self.NEXT_NODE)
         self.network.add_node(node)
         self.nodes_positions[node] = position
     
