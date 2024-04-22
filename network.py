@@ -1,4 +1,5 @@
 import pathlib
+import json
 from typing import Any, Iterable
 from collections import deque
 
@@ -67,7 +68,15 @@ class Network:
                     visited.add(neighbor)
     
     def dfs(self, start: Node) -> Iterable[Node]:
-        ...
+        stack = [start]
+        visited = {start}
+        while stack:
+            node = stack.pop()
+            yield node
+            for neighbor in self.adj[node]:
+                if neighbor not in visited:
+                    stack.append(neighbor)
+                    visited.add(neighbor)
     
     def shortest_path(self, start: Node, end: Node) -> list[Node]:
         ...
