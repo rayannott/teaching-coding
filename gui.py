@@ -38,7 +38,7 @@ ALL_NETWORK_PATHS = list(SAVES_DIR.glob('*.json'))
 ptr = count(-1)
 
 
-class NetworkApp:
+class NetworkGui:
     NODES_RADIUS = 20
 
     def _reload(self, network_path: pathlib.Path | None = None):

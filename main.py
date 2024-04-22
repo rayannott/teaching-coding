@@ -1,12 +1,12 @@
 import pathlib
 
 from network import Network
-from gui import NetworkApp
+from gui import NetworkGui
 
 
 SAVES_DIR = pathlib.Path("saves")
 
 
 if __name__ == "__main__":
-    app = NetworkApp()
+    app = NetworkGui()
     app.run()
