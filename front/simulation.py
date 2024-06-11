@@ -22,7 +22,7 @@ class SimulationGUI:
         self.cell_size = min_screen_size // max(self.grid_size)
         self.grid_background = self._get_grid_background()
 
-        self.simulation = Simulation(grid_size, mode=Mode.TERNARY)
+        self.simulation = Simulation(grid_size, mode=Mode.VANILLA)
 
         self.timer = Timer(0.15)
         self.running = False
