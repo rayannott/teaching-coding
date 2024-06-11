@@ -50,3 +50,10 @@ def get_random_grid(N: int, M: int) -> Grid:
     Returns a random grid of size N x M.
     """
     return [[random.choice([True, False]) for _ in range(M)] for _ in range(N)]
+
+
+def get_clean_grid(N: int, M: int) -> Grid:
+    """
+    Returns a clean grid of size N x M.
+    """
+    return [[False for _ in range(M)] for _ in range(N)]
