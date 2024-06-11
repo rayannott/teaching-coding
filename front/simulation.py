@@ -1,7 +1,6 @@
 import pygame
 
-from src.simulation import Simulation
-from src.grid import Grid
+from src.simulation import Simulation, Mode
 from src.utilis import Timer
 
 
@@ -23,17 +22,18 @@ class SimulationGUI:
         self.cell_size = min_screen_size // max(self.grid_size)
         self.grid_background = self._get_grid_background()
 
-        self.simulation = Simulation(grid_size)
+        self.simulation = Simulation(grid_size, mode=Mode.TERNARY)
 
         self.timer = Timer(0.15)
         self.running = False
         self.paused = True
 
-    def render_grid(self, grid: Grid):
+    def render_grid(self):
+        grid = self.simulation.current_grid
         n, m = self.grid_size
         for i in range(n):
             for j in range(m):
-                color = "#FFFFFF" if grid[i][j] else self.bg_color
+                color = self.simulation.get_color(grid[i][j])
                 pygame.draw.rect(
                     self.grid_screen,
                     color,
@@ -80,7 +80,7 @@ class SimulationGUI:
         click = self.get_cell_by_pos(event.pos)
         if click is not None:
             i, j = click
-            self.simulation.current_grid[i][j] = not self.simulation.current_grid[i][j]
+            self.simulation.current_grid[i][j] = (self.simulation.current_grid[i][j] + 1) % len(self.simulation.allowed_values)
         else:
             print("Click outside grid")
         
@@ -109,7 +109,7 @@ class SimulationGUI:
             self.update(time_delta)
             for event in pygame.event.get():
                 self.process_event(event)
-            self.render_grid(self.simulation.current_grid)
+            self.render_grid()
             self.screen.blit(self.grid_background, (0, 0))
             self.screen.blit(self.grid_screen, (0, 0))
             pygame.display.flip()
