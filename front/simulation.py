@@ -96,6 +96,8 @@ class SimulationGUI:
                 self.simulation.random_grid()
             elif event.key == pygame.K_c:
                 self.simulation.clean_grid()
+            elif event.key == pygame.K_g:
+                self.simulation.generate_gif()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             self.process_click_event(event)
 

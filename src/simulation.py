@@ -1,5 +1,6 @@
 from enum import Enum, auto
 from src.grid import get_random_grid, get_clean_grid, vanilla_step, ternary_step
+from src.utilis import make_gif
 
 
 class Mode(Enum):
@@ -32,9 +33,11 @@ class Simulation:
         self.allowed_values = list(COLOR_MAP[mode].keys())
         self.next_step_func = NEXT_STEP_FUNCTION_MAP[mode]
         self.current_grid = get_clean_grid(*self.grid_size)
+        self._history = [self.current_grid.copy()]
 
     def step(self):
         self.current_grid = self.next_step_func(self.current_grid)
+        self._history.append(self.current_grid.copy())
 
     def get_color(self, cell_val: int) -> str:
         return COLOR_MAP[self.mode][cell_val]
@@ -44,3 +47,6 @@ class Simulation:
 
     def clean_grid(self):
         self.current_grid = get_clean_grid(*self.grid_size)
+
+    def generate_gif(self):
+        make_gif(self._history, COLOR_MAP[self.mode])
