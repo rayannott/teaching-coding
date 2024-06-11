@@ -33,9 +33,11 @@ def decide_cell_vanilla(grid: Grid, i: int, j: int) -> int:
 
 def decide_cell_ternary(grid: Grid, i: int, j: int) -> int:
     neighb = neighbors(grid, i, j, 3)
-
-    picked = neighb.index(min(neighb))
-    return (picked + 1) % 3
+    num_uniq_elements = len(set(neighb))
+    if num_uniq_elements == 3:
+        return neighb.index(min(neighb))
+    cell = grid[i][j]
+    return cell
 
 
 def next_step(grid: Grid, decider_func: Callable[[Grid, int, int], int]) -> Grid:

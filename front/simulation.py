@@ -22,7 +22,7 @@ class SimulationGUI:
         self.cell_size = min_screen_size // max(self.grid_size)
         self.grid_background = self._get_grid_background()
 
-        self.simulation = Simulation(grid_size, mode=Mode.VANILLA)
+        self.simulation = Simulation(grid_size, mode=Mode.TERNARY)
 
         self.timer = Timer(0.15)
         self.running = False
@@ -88,7 +88,9 @@ class SimulationGUI:
         if event.type == pygame.QUIT:
             self.running = False
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_ESCAPE:
+                self.running = False
+            elif event.key == pygame.K_SPACE:
                 self.simulation.step()
             elif event.key == pygame.K_p:
                 self.paused = not self.paused
