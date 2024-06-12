@@ -61,9 +61,11 @@ def ternary_step(grid: Grid) -> Grid:
     return next_step(grid, decide_cell_ternary)
 
 
-def get_random_grid(N: int, M: int, values: list[int]) -> Grid:
+def get_random_grid(N: int, M: int, values: list[int] = [0, 1]) -> Grid:
     """
     Returns a random grid of size N x M.
+
+    N > 0, M > 0.
     """
     return [[random.choice(values) for _ in range(M)] for _ in range(N)]
 
@@ -71,5 +73,7 @@ def get_random_grid(N: int, M: int, values: list[int]) -> Grid:
 def get_clean_grid(N: int, M: int) -> Grid:
     """
     Returns a clean grid of size N x M.
+
+    N > 0, M > 0.
     """
     return [[0 for _ in range(M)] for _ in range(N)]

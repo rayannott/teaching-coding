@@ -37,7 +37,7 @@ class Simulation:
 
     def step(self):
         self.current_grid = self.next_step_func(self.current_grid)
-        self._history.append(self.current_grid.copy())
+        # self._history.append(self.current_grid.copy())
 
     def get_color(self, cell_val: int) -> str:
         return COLOR_MAP[self.mode][cell_val]
