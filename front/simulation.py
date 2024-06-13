@@ -2,15 +2,13 @@ import json
 import pygame
 import pyperclip
 
-from src.simulation import Simulation, Mode
+from src.simulation import Simulation, Mode, BG_COLOR
 from src.utilis import Timer, mute_color
 
 from src.blueprint import Blueprint
 
 
 MARGIN = 2
-
-BG_COLOR = "#303030"
 
 
 class SimulationGUI:
@@ -51,11 +49,10 @@ class SimulationGUI:
         )
 
     def render_grid(self):
-        grid = self.simulation.current_grid
         n, m = self.grid_size
         for i in range(n):
             for j in range(m):
-                color = self.simulation.get_color(grid[i][j])
+                color = self.simulation.get_envelope_color_at((i, j))
                 self.draw_cell(i, j, color)
 
     def render_blueprint(self):
@@ -66,11 +63,13 @@ class SimulationGUI:
         if cell_hover is None:
             return
         is_ctrl_mode = pygame.key.get_mods() & pygame.KMOD_CTRL
-        for cell, val in self.simulation.iterate_blueprint_cells(self.bp_hand, cell_hover):
+        for cell, val in self.simulation.iterate_blueprint_cells(
+            self.bp_hand, cell_hover
+        ):
             if is_ctrl_mode and val == 0:
                 continue
             color = self.simulation.get_color(val)
-            if color != BG_COLOR:
+            if val != 0:
                 color = mute_color(color)
             self.draw_cell(*cell, color)
 
@@ -121,13 +120,15 @@ class SimulationGUI:
             i, j = click
             if self.bp_hand is None:
                 print("switch cell state", click)
-                self.simulation.current_grid[i][j] = (
-                    self.simulation.current_grid[i][j] + 1
-                ) % len(self.simulation.allowed_values)
+                self.simulation[i, j] = (self.simulation[i, j] + 1) % len(
+                    self.simulation.allowed_values
+                )
             else:
                 # paste blueprint
                 print("paste blueprint at", click)
-                self.simulation.paste_blueprint(self.bp_hand, click, override_with_value_0=not is_ctrl_mode)
+                self.simulation.paste_blueprint(
+                    self.bp_hand, click, override_with_value_0=not is_ctrl_mode
+                )
             self.cell_down, self.cell_up = None, None
         elif (
             is_shift_mode
@@ -207,11 +208,11 @@ class SimulationGUI:
                 pyperclip.copy(self.bp_hand.serialize())
                 print("copied blueprint to clipboard")
             elif event.key == pygame.K_UP:
-                self.timer.current_time = 0.
+                self.timer.current_time = 0.0
                 self.timer.max_time *= 0.75
                 print(self.timer.max_time)
             elif event.key == pygame.K_DOWN:
-                self.timer.current_time = 0.
+                self.timer.current_time = 0.0
                 self.timer.max_time *= 1.25
                 print(self.timer.max_time)
             elif event.key == pygame.K_g:
@@ -222,7 +223,6 @@ class SimulationGUI:
             else:
                 # scroll
                 print(f'scroll {"up" if event.button == 4 else "down"}')
-
 
     def run(self):
         pygame.init()

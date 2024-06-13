@@ -8,8 +8,13 @@ from src.utilis import make_gif
 from src.blueprint import Blueprint
 
 
-BLUEPRINTS_DIR = pathlib.Path('blueprints')
-BLUEPRINTS_FILE = BLUEPRINTS_DIR / 'bps.jsonl'
+BLUEPRINTS_DIR = pathlib.Path("blueprints")
+BLUEPRINTS_FILE = BLUEPRINTS_DIR / "bps.jsonl"
+
+
+BG_COLOR = "#303030"
+
+BG_COLOR_ENVELOPE = "#505050"
 
 
 class Mode(Enum):
@@ -24,11 +29,11 @@ NEXT_STEP_FUNCTION_MAP = {
 
 COLOR_MAP = {
     Mode.VANILLA: {
-        0: "#303030",
+        0: BG_COLOR,
         1: "#FFFFFF",
     },
     Mode.TERNARY: {
-        0: "#303030",
+        0: BG_COLOR,
         1: "#ffcc99",
         2: "#66ccff",
     },
@@ -47,32 +52,57 @@ class Simulation:
         self.blueprints = self.load_blueprints()
         self.blueprints_iter = cycle(self.blueprints)
 
+        self.envelope_grid = get_clean_grid(*self.grid_size)
+
     @staticmethod
     def load_blueprints() -> set[Blueprint]:
         with open(BLUEPRINTS_FILE) as f:
-            loaded = {Blueprint.deserialize(line.strip()) for line in f if not line.startswith('#') and line.strip()}
+            loaded = {
+                Blueprint.deserialize(line.strip())
+                for line in f
+                if not line.startswith("#") and line.strip()
+            }
         print(f"Loaded {len(loaded)} blueprints.")
         return loaded
-    
+
     def dump_blueprint(self, bp: Blueprint):
-        with open(BLUEPRINTS_FILE, 'a') as f:
-            f.write(bp.serialize() + '\n')
+        with open(BLUEPRINTS_FILE, "a") as f:
+            f.write(bp.serialize() + "\n")
 
     def save_blueprint(self, bp: Blueprint):
         self.blueprints.add(bp)
         self.blueprints_iter = cycle(self.blueprints)
 
+    def __setitem__(self, cell: tuple[int, int], value: int):
+        self.current_grid[cell[0]][cell[1]] = value
+        if value:
+            self.envelope_grid[cell[0]][cell[1]] = 1
+
+    def __getitem__(self, cell: tuple[int, int]) -> int:
+        return self.current_grid[cell[0]][cell[1]]
+
     def step(self):
         self.current_grid = self.next_step_func(self.current_grid)
+        for i in range(self.grid_size[0]):
+            for j in range(self.grid_size[1]):
+                if self.current_grid[i][j]:
+                    self.envelope_grid[i][j] = 1
         # self._history.append(self.current_grid.copy())
-    
-    def paste_blueprint(self, blueprint: Blueprint, cell: tuple[int, int], override_with_value_0: bool = True):
+
+    def paste_blueprint(
+        self,
+        blueprint: Blueprint,
+        cell: tuple[int, int],
+        override_with_value_0: bool = True,
+    ):
         for cell, val in self.iterate_blueprint_cells(blueprint, cell):
             if val == 0 and not override_with_value_0:
                 continue
-            self.current_grid[cell[0]][cell[1]] = val
+            self[cell[0], cell[1]] = val
 
-    def iterate_blueprint_cells(self, blueprint: Blueprint, topleft: tuple[int, int]) -> Iterable[tuple[tuple[int, int], int]]:
+    def iterate_blueprint_cells(
+        self, blueprint: Blueprint, topleft: tuple[int, int]
+    ) -> Iterable[tuple[tuple[int, int], int]]:
         i, j = topleft
         n, m = len(blueprint.subgrid), len(blueprint.subgrid[0])
         for ki in range(n):
@@ -84,6 +114,12 @@ class Simulation:
 
     def get_color(self, cell_val: int) -> str:
         return COLOR_MAP[self.mode][cell_val]
+    
+    def get_envelope_color_at(self, cell: tuple[int, int]) -> str:
+        val = self[cell]
+        if val == 0 and self.envelope_grid[cell[0]][cell[1]]:
+            return BG_COLOR_ENVELOPE
+        return self.get_color(val)
 
     def random_grid(self):
         self.current_grid = get_random_grid(*self.grid_size, values=self.allowed_values)
