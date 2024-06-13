@@ -8,7 +8,7 @@ from src.utilis import Timer, mute_color
 from src.blueprint import Blueprint
 
 
-MARGIN = 2
+MARGIN = 1
 
 
 class SimulationGUI:
@@ -217,6 +217,8 @@ class SimulationGUI:
                 print(self.timer.max_time)
             elif event.key == pygame.K_g:
                 self.simulation.generate_gif()
+            elif event.key == pygame.K_h:
+                self.simulation.statistics()
         elif event.type in {pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP}:
             if event.button in {1, 3}:
                 self.process_click_event(event, event.type == pygame.MOUSEBUTTONUP)

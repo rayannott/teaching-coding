@@ -3,6 +3,8 @@ from itertools import cycle
 from typing import Iterable
 import pathlib
 
+import matplotlib.pyplot as plt
+
 from src.grid import get_random_grid, get_clean_grid, vanilla_step, ternary_step
 from src.utilis import make_gif
 from src.blueprint import Blueprint
@@ -87,7 +89,14 @@ class Simulation:
             for j in range(self.grid_size[1]):
                 if self.current_grid[i][j]:
                     self.envelope_grid[i][j] = 1
-        # self._history.append(self.current_grid.copy())
+        self._history.append(self.current_grid.copy())
+    
+    def statistics(self):
+        populations = []
+        for i in range(1, len(self._history)):
+            populations.append(sum(sum(row) for row in self._history[i]))
+        plt.plot(populations)
+        plt.show()
 
     def paste_blueprint(
         self,
