@@ -162,6 +162,14 @@ class SimulationGUI:
                     print("no blueprint in hand to save")
                     return
                 self.simulation.dump_blueprint(self.bp_hand)
+            elif event.key == pygame.K_UP:
+                self.timer.current_time = 0.
+                self.timer.max_time *= 0.75
+                print(self.timer.max_time)
+            elif event.key == pygame.K_DOWN:
+                self.timer.current_time = 0.
+                self.timer.max_time *= 1.25
+                print(self.timer.max_time)
             elif event.key == pygame.K_g:
                 self.simulation.generate_gif()
         elif event.type in {pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP}:
