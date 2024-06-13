@@ -54,7 +54,7 @@ class Blueprint:
         for num, symbol in NUMBER_SYMBOL_RE.findall(other_lines_merged):
             num = int(num) if num else 1
             if symbol == "$":
-                row_idx += 1
+                row_idx += num
                 col_idx = 0
                 continue
             value = 1 if symbol == "o" else 0
