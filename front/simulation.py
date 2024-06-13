@@ -8,7 +8,9 @@ from src.utilis import Timer, mute_color
 from src.blueprint import Blueprint
 
 
-MARGIN = 1
+MARGIN = 2
+
+BG_COLOR = "#303030"
 
 
 class SimulationGUI:
@@ -18,7 +20,6 @@ class SimulationGUI:
         self.grid_size = grid_size
         self.screen_size = screen_size
 
-        self.bg_color = "#303030"
         self.screen = pygame.display.set_mode(self.screen_size)
         min_screen_size = min(self.screen_size)
         self.grid_screen_size = (min_screen_size, min_screen_size)
@@ -28,7 +29,7 @@ class SimulationGUI:
 
         self.simulation = Simulation(grid_size, mode=Mode.VANILLA)
 
-        self.timer = Timer(0.15)
+        self.timer = Timer(0.1)
         self.running = False
         self.paused = True
 
@@ -69,13 +70,13 @@ class SimulationGUI:
             if is_ctrl_mode and val == 0:
                 continue
             color = self.simulation.get_color(val)
-            if color != self.bg_color:
+            if color != BG_COLOR:
                 color = mute_color(color)
             self.draw_cell(*cell, color)
 
     def _get_grid_background(self) -> pygame.Surface:
         bg = pygame.Surface(self.grid_screen_size)
-        bg.fill(self.bg_color)
+        bg.fill(BG_COLOR)
         n, m = self.grid_size
         for i in range(n):
             pygame.draw.line(
@@ -186,11 +187,19 @@ class SimulationGUI:
                 self.simulation.dump_blueprint(self.bp_hand)
             elif event.key == pygame.K_v:
                 clipboard = pyperclip.paste()
+                print("clipboard:", clipboard)
                 try:
                     self.bp_hand = Blueprint.deserialize(clipboard)
                     print("insert blueprint in hand:", self.bp_hand)
+                    return
                 except json.JSONDecodeError:
                     print("invalid blueprint in clipboard")
+                try:
+                    self.bp_hand = Blueprint.from_rle(clipboard)
+                    print("insert blueprint in hand:", self.bp_hand)
+                    return
+                except ValueError:
+                    print("invalid RLE in clipboard")
             elif event.key == pygame.K_e:
                 if self.bp_hand is None:
                     print("no blueprint in hand to export")
