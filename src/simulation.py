@@ -1,6 +1,14 @@
 from enum import Enum, auto
+from itertools import cycle
+import pathlib
+
 from src.grid import get_random_grid, get_clean_grid, vanilla_step, ternary_step
 from src.utilis import make_gif
+from src.blueprint import Blueprint
+
+
+BLUEPRINTS_DIR = pathlib.Path('blueprints')
+BLUEPRINTS_FILE = BLUEPRINTS_DIR / 'bps.jsonl'
 
 
 class Mode(Enum):
@@ -34,6 +42,18 @@ class Simulation:
         self.next_step_func = NEXT_STEP_FUNCTION_MAP[mode]
         self.current_grid = get_clean_grid(*self.grid_size)
         self._history = [self.current_grid.copy()]
+
+        self.blueprints = self.load_blueprints()
+        self.blueprints_iter = cycle(self.blueprints)
+
+    @staticmethod
+    def load_blueprints() -> list[Blueprint]:
+        with open(BLUEPRINTS_FILE) as f:
+            return [Blueprint.deserialize(line.strip()) for line in f]
+    
+    def dump_blueprint(self, bp: Blueprint):
+        with open(BLUEPRINTS_FILE, 'a') as f:
+            f.write(bp.serialize() + '\n')
 
     def step(self):
         self.current_grid = self.next_step_func(self.current_grid)
