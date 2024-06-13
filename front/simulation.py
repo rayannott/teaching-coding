@@ -1,7 +1,7 @@
 import pygame
 
 from src.simulation import Simulation, Mode
-from src.utilis import Timer
+from src.utilis import Timer, mute_color
 
 from src.blueprint import Blueprint
 
@@ -68,6 +68,8 @@ class SimulationGUI:
             for kj in range(m):
                 if 0 <= i + ki < self.grid_size[0] and 0 <= j + kj < self.grid_size[1]:
                     color = self.simulation.get_color(self.bp_hand.subgrid[ki][kj])
+                    if color != self.bg_color:
+                        color = mute_color(color)
                     self.draw_cell(i + ki, j + kj, color)
 
     def _get_grid_background(self) -> pygame.Surface:

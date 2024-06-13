@@ -23,6 +23,12 @@ def hex_to_rgb(hex_color: str) -> np.ndarray:
     return np.array([int(hex_color[i : i + 2], 16) for i in (0, 2, 4)])
 
 
+def mute_color(hex_color: str) -> str:
+    rgb = hex_to_rgb(hex_color)
+    rgb = 0.5 * rgb
+    return "#" + "".join(f"{int(x):02x}" for x in rgb)
+
+
 def make_gif(grids: list[list[list[int]]], color_map: dict[int, str]):
     #! doesn't work
     grids_np = np.array(grids)
