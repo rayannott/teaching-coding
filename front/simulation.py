@@ -133,10 +133,10 @@ class SimulationGUI:
             and self.cell_down != self.cell_up
         ):
             # create blueprint
-            print(self.cell_down, self.cell_up)
             self.bp_hand = Blueprint(
                 self.simulation.current_grid, self.cell_down, self.cell_up
             )
+            print("new blueprint in hand:", self.bp_hand)
             self.cell_down, self.cell_up = None, None
 
     def process_event(self, event: pygame.event.Event):
@@ -157,9 +157,15 @@ class SimulationGUI:
                 self.bp_hand = None
             elif event.key == pygame.K_x:
                 self.bp_hand = next(self.simulation.blueprints_iter)
+                print("blueprint in hand:", self.bp_hand)
             elif event.key == pygame.K_s:
                 if self.bp_hand is None:
                     print("no blueprint in hand to save")
+                    return
+                self.simulation.save_blueprint(self.bp_hand)
+            elif event.key == pygame.K_d:
+                if self.bp_hand is None:
+                    print("no blueprint in hand to dump")
                     return
                 self.simulation.dump_blueprint(self.bp_hand)
             elif event.key == pygame.K_UP:

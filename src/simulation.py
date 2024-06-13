@@ -46,15 +46,23 @@ class Simulation:
 
         self.blueprints = self.load_blueprints()
         self.blueprints_iter = cycle(self.blueprints)
+        next(self.blueprints_iter)
 
     @staticmethod
-    def load_blueprints() -> list[Blueprint]:
+    def load_blueprints() -> list[Blueprint | None]:
         with open(BLUEPRINTS_FILE) as f:
-            return [Blueprint.deserialize(line.strip()) for line in f]
+            loaded = [Blueprint.deserialize(line.strip()) for line in f if not line.startswith('#') and line.strip()]
+        print(f"Loaded {len(loaded)} blueprints.")
+        return [None] + loaded
     
     def dump_blueprint(self, bp: Blueprint):
         with open(BLUEPRINTS_FILE, 'a') as f:
             f.write(bp.serialize() + '\n')
+
+    def save_blueprint(self, bp: Blueprint):
+        self.blueprints.append(bp)
+        self.blueprints_iter = cycle(self.blueprints)
+        next(self.blueprints_iter) # skip None
 
     def step(self):
         self.current_grid = self.next_step_func(self.current_grid)
