@@ -26,9 +26,9 @@ def decide_cell_vanilla(grid: Grid, i: int, j: int) -> int:
     neighb = neighbors(grid, i, j, 2)
     count_alive = neighb[1]
     if grid[i][j]:
-        return count_alive == 2 or count_alive == 3
+        return int(count_alive == 2) or int(count_alive == 3)
     else:
-        return count_alive == 3
+        return int(count_alive == 3)
 
 
 def decide_cell_ternary(grid: Grid, i: int, j: int) -> int:
