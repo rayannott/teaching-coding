@@ -166,12 +166,12 @@ class SimulationGUI:
                 if self.bp_hand is None:
                     print("no blueprint in hand to flip")
                     return
-                self.bp_hand.flip()
+                self.bp_hand = self.bp_hand.get_flipped()
             elif event.key == pygame.K_r:
                 if self.bp_hand is None:
                     print("no blueprint in hand to rotate")
                     return
-                self.bp_hand.rotate()
+                self.bp_hand = self.bp_hand.get_rotated()
             elif event.key == pygame.K_s:
                 if self.bp_hand is None:
                     print("no blueprint in hand to save")

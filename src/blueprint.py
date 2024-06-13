@@ -20,12 +20,12 @@ class Blueprint:
             ]
         else:
             raise ValueError("Invalid arguments")
-    
-    def rotate(self):
-        self.subgrid = list(zip(*reversed(self.subgrid)))
-    
-    def flip(self):
-        self.subgrid = list(reversed(self.subgrid))
+
+    def get_rotated(self) -> "Blueprint":
+        return Blueprint(subgrid=list(zip(*reversed(self.subgrid))))
+
+    def get_flipped(self):
+        return Blueprint(subgrid=list(reversed(self.subgrid)))
 
     def serialize(self) -> str:
         return json.dumps(self.subgrid)
@@ -35,8 +35,11 @@ class Blueprint:
         subgrid = json.loads(json_str)
         return cls(subgrid=subgrid)
 
+    def __hash__(self) -> int:
+        return hash(str(self.subgrid))
+
     def __repr__(self):
-        _str = ''
+        _str = ""
         for row in self.subgrid:
-            _str += ''.join(str(cell) for cell in row) + '\n'
+            _str += "".join(str(cell) for cell in row) + "\n"
         return f"Blueprint(\n{_str})"
