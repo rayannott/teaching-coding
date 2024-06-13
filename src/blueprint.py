@@ -20,6 +20,12 @@ class Blueprint:
             ]
         else:
             raise ValueError("Invalid arguments")
+    
+    def rotate(self):
+        self.subgrid = list(zip(*reversed(self.subgrid)))
+    
+    def flip(self):
+        self.subgrid = list(reversed(self.subgrid))
 
     def serialize(self) -> str:
         return json.dumps(self.subgrid)

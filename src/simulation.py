@@ -46,14 +46,13 @@ class Simulation:
 
         self.blueprints = self.load_blueprints()
         self.blueprints_iter = cycle(self.blueprints)
-        next(self.blueprints_iter)
 
     @staticmethod
-    def load_blueprints() -> list[Blueprint | None]:
+    def load_blueprints() -> list[Blueprint]:
         with open(BLUEPRINTS_FILE) as f:
             loaded = [Blueprint.deserialize(line.strip()) for line in f if not line.startswith('#') and line.strip()]
         print(f"Loaded {len(loaded)} blueprints.")
-        return [None] + loaded
+        return loaded
     
     def dump_blueprint(self, bp: Blueprint):
         with open(BLUEPRINTS_FILE, 'a') as f:

@@ -149,15 +149,29 @@ class SimulationGUI:
                 self.simulation.step()
             elif event.key == pygame.K_p:
                 self.paused = not self.paused
-            elif event.key == pygame.K_r:
+            elif event.key == pygame.K_i:
                 self.simulation.random_grid()
             elif event.key == pygame.K_c:
                 self.simulation.clean_grid()
             elif event.key == pygame.K_q:
                 self.bp_hand = None
             elif event.key == pygame.K_x:
-                self.bp_hand = next(self.simulation.blueprints_iter)
-                print("blueprint in hand:", self.bp_hand)
+                try:
+                    self.bp_hand = next(self.simulation.blueprints_iter)
+                    print("blueprint in hand:", self.bp_hand)
+                except StopIteration:
+                    self.bp_hand = None
+                    print("no blueprints")
+            elif event.key == pygame.K_f:
+                if self.bp_hand is None:
+                    print("no blueprint in hand to flip")
+                    return
+                self.bp_hand.flip()
+            elif event.key == pygame.K_r:
+                if self.bp_hand is None:
+                    print("no blueprint in hand to rotate")
+                    return
+                self.bp_hand.rotate()
             elif event.key == pygame.K_s:
                 if self.bp_hand is None:
                     print("no blueprint in hand to save")
