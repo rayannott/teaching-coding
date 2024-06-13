@@ -62,15 +62,14 @@ class SimulationGUI:
         cell_hover = self.get_cell_by_pos(pos)
         if cell_hover is None:
             return
-        i, j = cell_hover
-        n, m = len(self.bp_hand.subgrid), len(self.bp_hand.subgrid[0])
-        for ki in range(n):
-            for kj in range(m):
-                if 0 <= i + ki < self.grid_size[0] and 0 <= j + kj < self.grid_size[1]:
-                    color = self.simulation.get_color(self.bp_hand.subgrid[ki][kj])
-                    if color != self.bg_color:
-                        color = mute_color(color)
-                    self.draw_cell(i + ki, j + kj, color)
+        is_ctrl_mode = pygame.key.get_mods() & pygame.KMOD_CTRL
+        for cell, val in self.simulation.iterate_blueprint_cells(self.bp_hand, cell_hover):
+            if is_ctrl_mode and val == 0:
+                continue
+            color = self.simulation.get_color(val)
+            if color != self.bg_color:
+                color = mute_color(color)
+            self.draw_cell(*cell, color)
 
     def _get_grid_background(self) -> pygame.Surface:
         bg = pygame.Surface(self.grid_screen_size)
@@ -109,6 +108,7 @@ class SimulationGUI:
             print("Click outside grid")
             return
         is_shift_mode = pygame.key.get_mods() & pygame.KMOD_SHIFT
+        is_ctrl_mode = pygame.key.get_mods() & pygame.KMOD_CTRL
         if is_mouse_up:
             self.cell_up = click
         else:
@@ -124,16 +124,7 @@ class SimulationGUI:
             else:
                 # paste blueprint
                 print("paste blueprint at", click)
-                n, m = len(self.bp_hand.subgrid), len(self.bp_hand.subgrid[0])
-                for ki in range(n):
-                    for kj in range(m):
-                        if (
-                            0 <= i + ki < self.grid_size[0]
-                            and 0 <= j + kj < self.grid_size[1]
-                        ):
-                            self.simulation.current_grid[i + ki][j + kj] = (
-                                self.bp_hand.subgrid[ki][kj]
-                            )
+                self.simulation.paste_blueprint(self.bp_hand, click, override_with_value_0=not is_ctrl_mode)
             self.cell_down, self.cell_up = None, None
         elif (
             is_shift_mode

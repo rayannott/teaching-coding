@@ -1,5 +1,6 @@
 from enum import Enum, auto
 from itertools import cycle
+from typing import Iterable
 import pathlib
 
 from src.grid import get_random_grid, get_clean_grid, vanilla_step, ternary_step
@@ -58,6 +59,22 @@ class Simulation:
     def step(self):
         self.current_grid = self.next_step_func(self.current_grid)
         # self._history.append(self.current_grid.copy())
+    
+    def paste_blueprint(self, blueprint: Blueprint, cell: tuple[int, int], override_with_value_0: bool = True):
+        for cell, val in self.iterate_blueprint_cells(blueprint, cell):
+            if val == 0 and not override_with_value_0:
+                continue
+            self.current_grid[cell[0]][cell[1]] = val
+
+    def iterate_blueprint_cells(self, blueprint: Blueprint, topleft: tuple[int, int]) -> Iterable[tuple[tuple[int, int], int]]:
+        i, j = topleft
+        n, m = len(blueprint.subgrid), len(blueprint.subgrid[0])
+        for ki in range(n):
+            for kj in range(m):
+                if 0 <= i + ki < self.grid_size[0] and 0 <= j + kj < self.grid_size[1]:
+                    cell = (i + ki, j + kj)
+                    val = blueprint.subgrid[ki][kj]
+                    yield cell, val
 
     def get_color(self, cell_val: int) -> str:
         return COLOR_MAP[self.mode][cell_val]
