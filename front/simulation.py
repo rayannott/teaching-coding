@@ -1,4 +1,6 @@
+import json
 import pygame
+import pyperclip
 
 from src.simulation import Simulation, Mode
 from src.utilis import Timer, mute_color
@@ -182,6 +184,19 @@ class SimulationGUI:
                     print("no blueprint in hand to dump")
                     return
                 self.simulation.dump_blueprint(self.bp_hand)
+            elif event.key == pygame.K_v:
+                clipboard = pyperclip.paste()
+                try:
+                    self.bp_hand = Blueprint.deserialize(clipboard)
+                    print("insert blueprint in hand:", self.bp_hand)
+                except json.JSONDecodeError:
+                    print("invalid blueprint in clipboard")
+            elif event.key == pygame.K_e:
+                if self.bp_hand is None:
+                    print("no blueprint in hand to export")
+                    return
+                pyperclip.copy(self.bp_hand.serialize())
+                print("copied blueprint to clipboard")
             elif event.key == pygame.K_UP:
                 self.timer.current_time = 0.
                 self.timer.max_time *= 0.75

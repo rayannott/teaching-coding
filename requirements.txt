@@ -1,3 +1,4 @@
 pygame # for simulation and gui
 pytest # for testing
 pillow # for gif generation
+pyperclip # for copying from clipboard
