@@ -10,7 +10,7 @@ from src.utilis import make_gif
 from src.blueprint import Blueprint
 
 
-BLUEPRINTS_DIR = pathlib.Path("blueprints")
+BLUEPRINTS_DIR = pathlib.Path("others") / "blueprints"
 BLUEPRINTS_FILE = BLUEPRINTS_DIR / "bps.jsonl"
 
 
