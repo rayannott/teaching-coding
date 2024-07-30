@@ -37,3 +37,10 @@ object oriented hierarchy:
     - OPTIONAL `reply_to` int: id of the message this message is a reply to
     - OPTIONAL `edited_dt` datetime.datetime: if the message was edited, the time of the last edit
     - `has_link` bool: if the message contains a link (use regex to find links)
+- interesting things to look at:
+    - maximum length chain of message replies (e.g. if message $m_n$ is a reply to message $m_{n-1}$, which is a reply to message $m_{n-2}$, etc., then the chain length is $n$)
+
+### Possible Extensions
+- map backend analysis to a web interface (e.g. Plotly Dash)
+    - this requires to use plotly for plotting the graphs
+- 
