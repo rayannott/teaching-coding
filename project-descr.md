@@ -13,7 +13,6 @@ Message history statistics and visualization tool for Telegram chats.
 ## Features
 
 ### Essential
-object oriented hierarchy:
 - `Chat` class: represents a message history of a chat between two users
     - initialized from a JSON file exported from Telegram
     - contains a list of `Message` objects
@@ -31,7 +30,7 @@ object oriented hierarchy:
 - `Chats` class: represents a collection of chats
     - initialized from a directory with JSON files exported from Telegram
     - contains a list of `Chat` objects
-    - contains all the methods for **comparison** of the statistics and visualization between the chats (e.g. graphs withe multiple lines for different chats, groupped bar charts, etc.)
+    - contains all the methods for **comparison** of the statistics and visualization between the chats (e.g. graphs with multiple lines for different chats, grouped bar charts, etc.)
 - more fields for the `Message` class:
     - OPTIONAL `attachment_type` attachment type (image, video, video message, voice message, sticker, gif, file, etc.)
     - OPTIONAL `reply_to` int: id of the message this message is a reply to
@@ -42,5 +41,5 @@ object oriented hierarchy:
 
 ### Possible Extensions
 - map backend analysis to a web interface (e.g. Plotly Dash)
-    - this requires to use plotly for plotting the graphs
+    - this would require us to use plotly for plotting the graphs
 - 
